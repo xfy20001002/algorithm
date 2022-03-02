@@ -92,11 +92,55 @@ func mergeKLists1(lists []*ListNode) *ListNode {
 	}
 	return head
 }
-func mergeKLists2(lists []*ListNode) *ListNode {
-	//time  O(n*log(k))
-	//space O(n)
-	//空间复杂度可以优化为O(k)
 
+/**
+ * Definition for singly-linked list.
+ * type ListNode struct {
+ *     Val int
+ *     Next *ListNode
+ * }
+ */
+
+//归并
+func mergeKLists2(lists []*ListNode) *ListNode {
+	if len(lists) == 0 {
+		return nil
+	}
+	for interval := 1; interval < len(lists); interval = interval * 2 {
+		for i := 0; i < len(lists)-interval; i = i + interval*2 {
+			lists[i] = merge2Lists(lists[i], lists[i+interval])
+		}
+	}
+	return lists[0]
+}
+
+func merge2Lists(list1, list2 *ListNode) *ListNode {
+	if list1 == nil || list2 == nil {
+		if list1 == nil {
+			return list2
+		} else {
+			return list1
+		}
+	}
+	var head ListNode
+	tail, p1, p2 := &head, list1, list2
+	for p1 != nil && p2 != nil {
+		if p1.Val < p2.Val {
+			tail.Next = p1
+			p1 = p1.Next
+			tail = tail.Next
+		} else {
+			tail.Next = p2
+			p2 = p2.Next
+			tail = tail.Next
+		}
+	}
+	if p1 == nil {
+		tail.Next = p2
+	} else {
+		tail.Next = p1
+	}
+	return head.Next
 }
 
 func main() {
